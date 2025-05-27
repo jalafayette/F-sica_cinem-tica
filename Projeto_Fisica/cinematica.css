@@ -1,0 +1,95 @@
+/* Configuração geral */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa toda a altura da janela */
+    background-color: #f0f0f0;
+    overflow: hidden; /* Remove o scroll */
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* Estilo das colunas */
+.container {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Permite scroll interno se necessário */
+}
+
+#inputsArea {
+    max-width: 300px;
+}
+
+#simulationAreaContent {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#outputsArea {
+    max-width: 300px;
+}
+
+/* Gráficos */
+#canvasContainer {
+    border: 1px solid black;
+    height: 200px;
+    width: 100%;
+}
+
+#graphsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.graph {
+    border: 1px solid black;
+    height: 150px;
+    width: 100%;
+}
+
+/* Botões */
+button {
+    padding: 5px 10px;
+    margin-top: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+        height: auto;
+    }
+
+    #inputsArea, #outputsArea {
+        max-width: 100%;
+    }
+}

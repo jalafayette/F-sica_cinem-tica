@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Cinemática MRUV</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <link rel="stylesheet" type="text/css" href="cinematica.css">
+</head>
+<body>
+    <div class="row">
+        <!-- Coluna de Inputs -->
+        <div class="container" id="inputsArea">
+            <h3>Parâmetros</h3>
+            <div class="input-group">
+                <label for="s0">Posição Inicial (s₀) (m):</label>
+                <input type="number" id="s0" value="0">
+            </div>
+            <div class="input-group">
+                <label for="v0">Velocidade Inicial (v₀) (m/s):</label>
+                <input type="number" id="v0" value="10">
+            </div>
+            <div class="input-group">
+                <label for="a1">Aceleração 1 (a₁) (m/s²):</label>
+                <input type="number" id="a1" value="-2">
+            </div>
+            <div class="input-group">
+                <label for="dt1">Duração 1 (Δt₁) (s):</label>
+                <input type="number" id="dt1" value="7">
+            </div>
+            <div class="input-group">
+                <label for="a2">Aceleração 2 (a₂) (m/s²):</label>
+                <input type="number" id="a2" value="1">
+            </div>
+            <div class="input-group">
+                <label for="dt2">Duração 2 (Δt₂) (s):</label>
+                <input type="number" id="dt2" value="6">
+            </div>
+            <div class="input-group">
+                <label for="a3">Aceleração 3 (a₃) (m/s²):</label>
+                <input type="number" id="a3" value="-3">
+            </div>
+            <div class="input-group">
+                <label for="dt3">Duração 3 (Δt₃) (s):</label>
+                <input type="number" id="dt3" value="5">
+            </div>
+            <button id="startButton">Iniciar</button>
+            <button id="pauseButton">Pausar</button>
+            <button id="resumeButton">Continuar</button>
+        </div>
+
+        <!-- Coluna de Animação e Gráficos -->
+        <div class="container" id="simulationAreaContent">
+            <h3>Animação e Gráficos</h3>
+            <div id="canvasContainer"></div>
+            <div id="graphsContainer">
+                <div id="posGraphContainer" class="graph"></div>
+                <div id="velGraphContainer" class="graph"></div>
+            </div>
+        </div>
+
+        <!-- Coluna de Resultados -->
+        <div class="container" id="outputsArea">
+            <h3>Resultados</h3>
+            <p id="deslocamentoTotal"></p>
+            <p id="espacoPercorrido"></p>
+            <p id="instantesInversao"></p>
+            <p id="tempoTotal"></p>
+            <h3>Equações</h3>
+            <div id="eqVelocidades"></div>
+            <div id="eqPosicoes"></div>
+        </div>
+    </div>
+
+    <script src="cinematica.js"></script>
+</body>
+</html>
