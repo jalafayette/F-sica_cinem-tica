@@ -1,65 +1,206 @@
+/*!
+ * \file cinematica.css
+ * \brief Folha de estilos para o Simulador de Cinemática MRUV.
+ *
+ * Define a aparência e o layout dos elementos da interface do usuário,
+ * incluindo o tema escuro, a disposição das colunas, e o estilo
+ * dos campos de entrada, botões, e áreas de exibição de resultados e gráficos.
+ * Também inclui ajustes responsivos para telas menores.
+ */
+
 /* Configuração geral */
+/*! \brief Estilos base para o corpo da página (body).
+ * Define a família da fonte padrão, cor do texto, remoção de margens e preenchimento padrão,
+ * configuração de display flex para centralização do conteúdo principal, altura total da viewport,
+ * cor de fundo, remoção de scroll da página e tamanho de fonte base.
+ */
 body {
     font-family: sans-serif;
+    color:rgb(255, 255, 255);
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh; /* Ocupa toda a altura da janela */
-    background-color: #f0f0f0;
+    background-color: #000000;
     overflow: hidden; /* Remove o scroll */
+    font-size: 14px; /* Aumenta o tamanho da fonte base da página */
 }
 
+/*! \brief Estilos para o contêiner de linha principal (.row).
+ * Organiza as colunas principais da interface em uma linha horizontal.
+ * Define o espaçamento entre colunas (gap), largura total, largura máxima permitida,
+ * altura total e o modelo de caixa (box-sizing).
+ */
 .row {
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 10px; 
     width: 100%;
-    max-width: 1200px;
+    max-width: 1700px; /* Pode ajustar conforme a largura máxima desejada para a página inteira */
     height: 100%;
     box-sizing: border-box;
 }
 
 /* Estilo das colunas */
+/*! \brief Estilos base para os contêineres de coluna (.container).
+ * Define o preenchimento interno, borda, raio da borda, cor de fundo,
+ * sombra para efeito de profundidade, e comportamento de overflow para permitir
+ * scroll vertical interno e esconder scroll horizontal.
+ */
 .container {
-    flex: 1;
-    padding: 10px;
+    padding: 10px; 
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #fff;
+    background-color: #000000; /* Mantido o fundo preto para os containers */
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-    overflow-y: auto; /* Permite scroll interno se necessário */
+    overflow-y: auto; 
+    overflow-x: hidden; 
 }
 
-#inputsArea {
-    max-width: 300px;
+/* Estilo geral para títulos h3 dentro dos containers */
+/*! \brief Estilos para os títulos de nível 3 (h3) localizados dentro de elementos .container.
+ * Define o tamanho da fonte, remove a margem superior padrão e ajusta a margem inferior
+ * para espaçamento.
+ */
+.container h3 {
+    font-size: 1.2em; /* Aumenta o tamanho dos títulos h3 */
+    margin-top: 0; /* Remove margem superior padrão do h3 se já houver padding no container */
+    margin-bottom: 15px; /* Aumenta o espaço abaixo do título */
 }
 
-#simulationAreaContent {
-    flex: 2;
+/* Classes para larguras de coluna */
+/*! \brief Estilos para a coluna de parâmetros (.column-parameters).
+ * Define o comportamento flex (fator de crescimento, resistência ao encolhimento, largura base)
+ * e as larguras mínima e máxima para esta coluna.
+ */
+.column-parameters { /* Nova classe para a coluna de parâmetros */
+    flex-grow: 1;   
+    flex-shrink: 0; /* Não encolher abaixo da sua base ou min-width */
+    flex-basis: 300px;  /* Largura base desejada, ajuste conforme necessário */
+    min-width: 280px; 
+    max-width: 350px; /* Largura máxima para evitar que cresça demais */
+}
+
+/*! \brief Estilos para a coluna de simulação e gráficos (.column-simulation).
+ * Define o comportamento flex para que esta coluna ocupe uma porção maior do espaço disponível
+ * (fator de crescimento maior) e uma largura mínima para garantir a visibilidade dos gráficos.
+ */
+.column-simulation { /* Nova classe para a coluna de simulação/gráficos */
+    flex-grow: 3; /* Fator de crescimento maior para ocupar mais espaço */
+    flex-shrink: 1; 
+    flex-basis: 0; /* Deixa o flex-grow dominar a distribuição do espaço livre */
+    min-width: 500px; /* Largura mínima para garantir visibilidade dos gráficos */
+}
+
+/*! \brief Estilos para a coluna de resultados (.column-results).
+ * Define o comportamento flex, largura mínima e máxima.
+ * Nota: Esta classe foi definida mas pode não estar em uso direto se a seção de resultados
+ * foi movida para dentro da coluna de simulação.
+ */
+.column-results { /* Nova classe para a coluna de resultados */
+    flex-grow: 1;   
+    flex-shrink: 0; /* Não encolher abaixo da sua base ou min-width */
+    flex-basis: 320px;  /* Largura base desejada, ajuste conforme necessário */
+    min-width: 300px; 
+    max-width: 400px; /* Largura máxima para evitar que cresça demais */
+}
+
+
+/*! \brief Estilos para os grupos de entrada (label e input) na área de parâmetros (#inputsArea .input-group).
+ * Organiza o label e o input em coluna e define a margem inferior do grupo.
+ */
+#inputsArea .input-group { /* Para garantir que os inputs não causem scroll */
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: column; /* Empilha label e input */
+    margin-bottom: 5px;
 }
 
+/*! \brief Estilos para os rótulos (label) dentro dos grupos de entrada na área de parâmetros.
+ * Ajusta a margem inferior e o tamanho da fonte do rótulo.
+ */
+#inputsArea .input-group label {
+    margin-bottom: 3px; /* Ajusta a margem */
+    font-size: 1em; /* Aumenta o tamanho da fonte do label */
+}
+
+/*! \brief Estilos para os campos de entrada (input) dentro dos grupos de entrada na área de parâmetros.
+ * Define a largura para ocupar 100% do contêiner pai (.input-group), o modelo de caixa,
+ * o preenchimento interno e o tamanho da fonte.
+ */
+#inputsArea .input-group input {
+    width: 100%; /* Faz o input ocupar a largura disponível do input-group */
+    box-sizing: border-box; /* Inclui padding e border na largura total */
+    padding: 6px 8px; /* Aumenta o padding do input */
+    font-size: 1em; /* Aumenta o tamanho da fonte do input */
+}
+
+
+/*! \brief Estilos para o contêiner da área de simulação e gráficos (#simulationAreaContent).
+ * Organiza os elementos internos (canvas de animação, área de resultados, contêiner de gráficos)
+ * em coluna com espaçamento entre eles.
+ */
+#simulationAreaContent {
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+}
+
+
+/* Adicionado para garantir que o texto das equações quebre linha */
+/*! \brief Estilos para a área de exibição de resultados (#outputsArea), agora dentro de #simulationAreaContent.
+ * Define a largura para ocupar todo o espaço da coluna pai, o modelo de caixa,
+ * preenchimento, margens superior e inferior, borda, raio da borda e cor de fundo.
+ */
 #outputsArea {
-    max-width: 300px;
+    width: 100%; 
+    box-sizing: border-box;
+    padding: 15px; /* Aumenta o padding */
+    margin-top: 10px; 
+    margin-bottom: 10px; 
+    border: 1px solid #444; 
+    border-radius: 6px;
+    background-color: #1c1c1c; 
+}
+
+/* #outputsArea h3 já é coberto por .container h3 */
+
+/* Estilos para o texto dentro de #outputsArea */
+/*! \brief Estilos para o texto pré-formatado (pre) e parágrafos (p) dentro da área de resultados.
+ * Garante a quebra de linha adequada do conteúdo, define o tamanho da fonte,
+ * a margem inferior e a cor do texto.
+ */
+#outputsArea pre, #outputsArea p { 
+    white-space: pre-wrap;    
+    word-wrap: break-word;    
+    font-size: 1em; /* Aumenta o tamanho da fonte */         
+    margin-bottom: 8px; /* Aumenta o espaçamento */
+    color: #e0e0e0; 
 }
 
 /* Gráficos */
+/*! \brief Estilos para o contêiner do canvas de animação (#canvasContainer).
+ * Define a borda, altura e largura (100% do pai).
+ */
 #canvasContainer {
     border: 1px solid black;
     height: 200px;
     width: 100%;
 }
 
+/*! \brief Estilos para o contêiner que agrupa os gráficos de posição e velocidade (#graphsContainer).
+ * Organiza os gráficos individuais em coluna com espaçamento entre eles.
+ */
 #graphsContainer {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
+/*! \brief Estilos base para os contêineres de gráfico individuais (.graph).
+ * Define a borda, altura e largura (100% do pai).
+ */
 .graph {
     border: 1px solid black;
     height: 150px;
@@ -67,29 +208,41 @@ body {
 }
 
 /* Botões */
+/*! \brief Estilos gerais para elementos de botão (button).
+ * Define o preenchimento, margem superior, cor de fundo, cor do texto,
+ * remoção de borda padrão, raio da borda, tipo de cursor e tamanho da fonte.
+ */
 button {
-    padding: 5px 10px;
-    margin-top: 5px;
-    background-color: #007bff;
-    color: white;
+    padding: 8px 15px; /* Aumenta o padding do botão */
+    margin-top: 8px; /* Aumenta a margem superior */
+    background-color: #f50e0e;
+    color: rgb(0, 0, 0);
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 1em; /* Aumenta o tamanho da fonte do botão */
 }
 
+/*! \brief Estilos para botões quando o cursor está sobre eles (estado :hover).
+ * Altera a cor de fundo para fornecer feedback visual.
+ */
 button:hover {
-    background-color: #0056b3;
+    background-color: #ff0000;
 }
 
 /* Ajustes para telas menores */
+/*! \brief Media query para aplicar estilos específicos em telas com largura máxima de 768px.
+ * Modifica o layout da linha principal (.row) para coluna, ajusta sua altura,
+ * e permite que as colunas de parâmetros e resultados (se esta última for uma coluna principal)
+ * ocupem a largura total da tela.
+ */
 @media (max-width: 768px) {
     .row {
         flex-direction: column;
         height: auto;
     }
 
-    #inputsArea, #outputsArea {
+    #inputsArea, #outputsArea { /* Se #outputsArea voltar a ser uma coluna principal */
         max-width: 100%;
     }
 }

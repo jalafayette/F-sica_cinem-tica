@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+    <!--! \brief Cabeçalho do documento HTML. Contém metadados, título e links para scripts e CSS. -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Cinemática MRUV</title>
@@ -8,70 +9,112 @@
     <link rel="stylesheet" type="text/css" href="cinematica.css">
 </head>
 <body>
+    <!--! \brief Contêiner principal para o layout em linha das colunas da interface. Utiliza a classe .row para display flex. -->
     <div class="row">
-        <!-- Coluna de Inputs -->
-        <div class="container" id="inputsArea">
+        <!--! \section inputs_section Coluna de Parâmetros de Entrada
+         *  Esta coluna (div#inputsArea) contém todos os campos para o usuário inserir os dados
+         *  iniciais da simulação, como posição inicial, velocidade inicial, e os valores de
+         *  aceleração e duração para cada um dos três intervalos de movimento.
+         *  Também inclui os botões de controle da simulação: Iniciar, Pausar e Continuar.
+        -->
+        <div id="inputsArea" class="container column-parameters">
             <h3>Parâmetros</h3>
+            <!--! \subsection s0_input Grupo de entrada para Posição Inicial (s₀). -->
             <div class="input-group">
                 <label for="s0">Posição Inicial (s₀) (m):</label>
                 <input type="number" id="s0" value="0">
             </div>
+            <!--! \subsection v0_input Grupo de entrada para Velocidade Inicial (v₀). -->
             <div class="input-group">
                 <label for="v0">Velocidade Inicial (v₀) (m/s):</label>
                 <input type="number" id="v0" value="10">
             </div>
+            <!--! \subsection a1_input Grupo de entrada para Aceleração 1 (a₁). -->
             <div class="input-group">
                 <label for="a1">Aceleração 1 (a₁) (m/s²):</label>
                 <input type="number" id="a1" value="-2">
             </div>
+            <!--! \subsection dt1_input Grupo de entrada para Duração 1 (Δt₁). -->
             <div class="input-group">
                 <label for="dt1">Duração 1 (Δt₁) (s):</label>
                 <input type="number" id="dt1" value="7">
             </div>
+            <!--! \subsection a2_input Grupo de entrada para Aceleração 2 (a₂). -->
             <div class="input-group">
                 <label for="a2">Aceleração 2 (a₂) (m/s²):</label>
                 <input type="number" id="a2" value="1">
             </div>
+            <!--! \subsection dt2_input Grupo de entrada para Duração 2 (Δt₂). -->
             <div class="input-group">
                 <label for="dt2">Duração 2 (Δt₂) (s):</label>
                 <input type="number" id="dt2" value="6">
             </div>
+            <!--! \subsection a3_input Grupo de entrada para Aceleração 3 (a₃). -->
             <div class="input-group">
                 <label for="a3">Aceleração 3 (a₃) (m/s²):</label>
                 <input type="number" id="a3" value="-3">
             </div>
+            <!--! \subsection dt3_input Grupo de entrada para Duração 3 (Δt₃). -->
             <div class="input-group">
                 <label for="dt3">Duração 3 (Δt₃) (s):</label>
                 <input type="number" id="dt3" value="5">
             </div>
+            <!--! Botão para iniciar a simulação. Associado à função iniciarSimulacao() em cinematica.js. -->
             <button id="startButton">Iniciar</button>
+            <!--! Botão para pausar a simulação. Associado à função pausarSimulacao() em cinematica.js. -->
             <button id="pauseButton">Pausar</button>
+            <!--! Botão para continuar a simulação. Associado à função continuarSimulacao() em cinematica.js. -->
             <button id="resumeButton">Continuar</button>
         </div>
 
-        <!-- Coluna de Animação e Gráficos -->
-        <div class="container" id="simulationAreaContent">
+        <!--! \section simulation_section Coluna de Animação, Resultados e Gráficos
+         *  Esta coluna (div#simulationAreaContent) é a área principal de visualização.
+         *  Ela exibe a animação da partícula em movimento, seguida pela seção de resultados
+         *  calculados (deslocamento, espaço percorrido, equações de movimento) e, por fim,
+         *  os gráficos de Posição vs. Tempo e Velocidade vs. Tempo.
+        -->
+        <div id="simulationAreaContent" class="container column-simulation">
             <h3>Animação e Gráficos</h3>
+            <!--! Contêiner (div#canvasContainer) para o canvas da animação da partícula. O canvas p5.js é inserido aqui. -->
             <div id="canvasContainer"></div>
+
+            <!--! \subsection results_subsection Seção de Resultados da Simulação
+             *  Este bloco (div#outputsArea) exibe os resultados numéricos calculados
+             *  pela simulação, como deslocamento total, espaço percorrido total,
+             *  instantes de inversão de sentido, tempo total da simulação,
+             *  e as equações de velocidade e posição para cada intervalo.
+            -->
+            <div id="outputsArea"> 
+                <h3>Resultados</h3>
+                <!--! Parágrafo (p#deslocamentoTotal) para exibir o deslocamento total da partícula. -->
+                <p id="deslocamentoTotal"></p>
+                <!--! Parágrafo (p#espacoPercorrido) para exibir o espaço percorrido total pela partícula. -->
+                <p id="espacoPercorrido"></p>
+                <!--! Parágrafo (p#instantesInversao) para exibir os instantes em que a partícula inverte o sentido do movimento. -->
+                <p id="instantesInversao"></p>
+                <!--! Parágrafo (p#tempoTotal) para exibir o tempo total de duração da simulação. -->
+                <p id="tempoTotal"></p>
+                <h3>Equações</h3>
+                <!--! Div (div#eqVelocidades) para exibir as equações de velocidade formatadas para cada intervalo. -->
+                <div id="eqVelocidades"></div>
+                <!--! Div (div#eqPosicoes) para exibir as equações de posição formatadas para cada intervalo. -->
+                <div id="eqPosicoes"></div>
+            </div>
+
+            <!--! \subsection graphs_subsection Contêiner para os Gráficos de Movimento
+             *  Este bloco (div#graphsContainer) agrupa os contêineres individuais
+             *  para os gráficos de Posição vs. Tempo e Velocidade vs. Tempo.
+            -->
             <div id="graphsContainer">
+                <!--! Contêiner (div#posGraphContainer) para o gráfico de Posição vs. Tempo. O objeto p5.Graphics correspondente é inserido aqui. -->
                 <div id="posGraphContainer" class="graph"></div>
+                <!--! Contêiner (div#velGraphContainer) para o gráfico de Velocidade vs. Tempo. O objeto p5.Graphics correspondente é inserido aqui. -->
                 <div id="velGraphContainer" class="graph"></div>
             </div>
         </div>
-
-        <!-- Coluna de Resultados -->
-        <div class="container" id="outputsArea">
-            <h3>Resultados</h3>
-            <p id="deslocamentoTotal"></p>
-            <p id="espacoPercorrido"></p>
-            <p id="instantesInversao"></p>
-            <p id="tempoTotal"></p>
-            <h3>Equações</h3>
-            <div id="eqVelocidades"></div>
-            <div id="eqPosicoes"></div>
-        </div>
     </div>
 
+    <!--! Inclusão do script JavaScript principal (cinematica.js) que contém a lógica da simulação. -->
     <script src="cinematica.js"></script>
 </body>
 </html>

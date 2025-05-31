@@ -1,31 +1,110 @@
-let s0, v0;
-let a = [], dt = []; // a[0] = a1, dt[0] = dt1, etc.
+/*!
+ * \file cinematica.js
+ * \brief Script principal para o simulador de cinemática MRUV.
+ * Este arquivo contém a lógica para a simulação, manipulação do DOM,
+ * desenho da animação e dos gráficos de posição e velocidade.
+ */
 
+/*! \var s0
+    \brief Posição inicial da partícula (m), lida do input. */
+let s0;
+/*! \var v0
+    \brief Velocidade inicial da partícula (m/s), lida do input. */
+let v0;
+/*! \var a
+    \brief Array contendo as acelerações para cada um dos três intervalos (m/s²). a[0] para o intervalo 1, etc. */
+let a = [], /*! \var dt
+    \brief Array contendo as durações para cada um dos três intervalos (s). dt[0] para o intervalo 1, etc. */
+dt = []; // a[0] = a1, dt[0] = dt1, etc.
+
+/*! \var particula
+    \brief Objeto representando o estado atual da partícula (posição 's', velocidade 'v', posição anterior 's_anterior'). */
 let particula;
+/*! \var tempoAnimacao
+    \brief Tempo decorrido na animação da simulação (s), atualizado a cada frame. */
 let tempoAnimacao;
+/*! \var rodandoSimulacao
+    \brief Flag booleana que indica se a simulação está em execução (true) ou não/terminada (false). */
 let rodandoSimulacao = false;
+/*! \var dadosGraficoPos
+    \brief Array de objetos {x, y} para os pontos do gráfico de Posição (y) vs. Tempo (x). */
 let dadosGraficoPos = [];
+/*! \var dadosGraficoVel
+    \brief Array de objetos {x, y} para os pontos do gráfico de Velocidade (y) vs. Tempo (x). */
 let dadosGraficoVel = [];
 
 // Elementos DOM para output
-let elEqVel, elEqPos, elDeslocamento, elEspaco, elInversao, elTempoTotal;
+/*! \var elEqVel
+    \brief Elemento DOM (div) para exibir as equações de velocidade formatadas. */
+let elEqVel, /*! \var elEqPos
+    \brief Elemento DOM (div) para exibir as equações de posição formatadas. */
+elEqPos, /*! \var elDeslocamento
+    \brief Elemento DOM (p) para exibir o deslocamento total calculado. */
+elDeslocamento, /*! \var elEspaco
+    \brief Elemento DOM (p) para exibir o espaço percorrido total calculado. */
+elEspaco, /*! \var elInversao
+    \brief Elemento DOM (p) para exibir os instantes de inversão de sentido. */
+elInversao, /*! \var elTempoTotal
+    \brief Elemento DOM (p) para exibir o tempo total da simulação. */
+elTempoTotal;
 
 // Canvas e gráficos
-let animCanvas, posGraphCanvas, velGraphCanvas;
+/*! \var animCanvas
+    \brief Canvas principal p5.js para a animação da partícula. */
+let animCanvas, /*! \var posGraphCanvas
+    \brief Objeto p5.Graphics para o gráfico de Posição vs. Tempo. */
+posGraphCanvas, /*! \var velGraphCanvas
+    \brief Objeto p5.Graphics para o gráfico de Velocidade vs. Tempo. */
+velGraphCanvas;
+/*! \var MARGEM_GRAFICO
+    \brief Constante definindo a margem interna dos gráficos em pixels, usada para eixos e rótulos. */
 const MARGEM_GRAFICO = 40;
-let maxPos, minPos, maxVel, minVel, tempoTotalSimulacao;
+/*! \var maxPos
+    \brief Valor máximo da posição atingido durante a simulação, usado para escala do gráfico de posição. */
+let maxPos, /*! \var minPos
+    \brief Valor mínimo da posição atingido durante a simulação, usado para escala do gráfico de posição. */
+minPos, /*! \var maxVel
+    \brief Valor máximo da velocidade atingido durante a simulação, usado para escala do gráfico de velocidade. */
+maxVel, /*! \var minVel
+    \brief Valor mínimo da velocidade atingido durante a simulação, usado para escala do gráfico de velocidade. */
+minVel, /*! \var tempoTotalSimulacao
+    \brief Tempo total de duração da simulação (s), soma de dt[0], dt[1] e dt[2]. */
+tempoTotalSimulacao;
 
 // NOVAS VARIÁVEIS GLOBAIS PARA OS BOTÕES E ESTADO DE PAUSA
-let pauseButton, resumeButton;
+/*! \var pauseButton
+    \brief Elemento DOM para o botão de pausar a simulação. */
+let pauseButton, /*! \var resumeButton
+    \brief Elemento DOM para o botão de continuar (resume) a simulação. */
+resumeButton;
+/*! \var simulacaoPausada
+    \brief Flag booleana que indica se a simulação está atualmente pausada (true) ou não (false). */
 let simulacaoPausada = false;
 
 // Cores
+/*! \var COR_PARTICULA
+    \brief Array RGB para a cor da partícula na animação. */
 const COR_PARTICULA = [255, 0, 0];
+/*! \var COR_INVERSAO
+    \brief Array RGB para a cor dos marcadores de inversão de sentido na animação e gráficos. */
 const COR_INVERSAO = [0, 0, 255];
+/*! \var COR_EIXO
+    \brief Array RGB para a cor dos eixos e rótulos nos gráficos. */
 const COR_EIXO = [0, 0, 0];
+/*! \var COR_GRAF_POS
+    \brief Array RGB para a cor da linha no gráfico de posição. */
 const COR_GRAF_POS = [0, 150, 0];
+/*! \var COR_GRAF_VEL
+    \brief Array RGB para a cor da linha no gráfico de velocidade. */
 const COR_GRAF_VEL = [0, 0, 150];
 
+/*!
+ * \brief Função de configuração inicial do p5.js, executada uma vez no início.
+ *
+ * Inicializa os canvases para animação e gráficos, vinculando-os aos seus respectivos
+ * contêineres HTML. Seleciona e configura os botões de controle (Iniciar, Pausar, Continuar)
+ * e os elementos DOM para exibição dos resultados. Interrompe o loop de desenho inicialmente.
+ */
 function setup() {
     console.log("Iniciando setup...");
     // Configurar canvas de animação
@@ -114,6 +193,16 @@ function setup() {
     console.log("Setup completo.");
 }
 
+/*!
+ * \brief Inicia ou reinicia a simulação com base nos parâmetros fornecidos pelo usuário.
+ *
+ * Esta função é chamada quando o botão "Iniciar" é pressionado.
+ * Ela lê os valores dos campos de input (s₀, v₀, a₁, Δt₁, a₂, Δt₂, a₃, Δt₃),
+ * valida esses valores (verifica se são números e se as durações são positivas).
+ * Inicializa/reinicializa o estado da partícula, o tempo da animação, os dados dos gráficos,
+ * e o tempo total da simulação. Calcula os resultados completos (equações, deslocamento, etc.)
+ * e os exibe. Habilita o botão de pausa, desabilita o de continuar e inicia o loop de desenho do p5.js.
+ */
 function iniciarSimulacao() {
     console.log("--- iniciarSimulacao() CHAMADA ---");
 
@@ -172,7 +261,14 @@ function iniciarSimulacao() {
     console.log("--- fim de iniciarSimulacao() ---");
 }
 
-// NOVA FUNÇÃO PARA PAUSAR
+/*!
+ * \brief Pausa a simulação em andamento.
+ *
+ * Chamada quando o botão "Pausar" é pressionado. Se a simulação estiver
+ * rodando e não estiver já pausada, esta função interrompe o loop de desenho
+ * do p5.js (`noLoop()`) e atualiza o estado da flag `simulacaoPausada`.
+ * Também ajusta o estado de habilitação dos botões "Pausar" e "Continuar".
+ */
 function pausarSimulacao() {
     if (rodandoSimulacao && !simulacaoPausada) {
         noLoop();
@@ -183,7 +279,14 @@ function pausarSimulacao() {
     }
 }
 
-// NOVA FUNÇÃO PARA CONTINUAR
+/*!
+ * \brief Continua uma simulação previamente pausada.
+ *
+ * Chamada quando o botão "Continuar" é pressionado. Se a simulação estiver
+ * rodando e estiver pausada, esta função retoma o loop de desenho do p5.js (`loop()`)
+ * e atualiza o estado da flag `simulacaoPausada`.
+ * Também ajusta o estado de habilitação dos botões "Pausar" e "Continuar".
+ */
 function continuarSimulacao() {
     if (rodandoSimulacao && simulacaoPausada) {
         loop();
@@ -194,6 +297,19 @@ function continuarSimulacao() {
     }
 }
 
+/*!
+ * \brief Calcula e exibe os resultados completos da simulação com base nos parâmetros atuais.
+ *
+ * Esta função é chamada no início da simulação. Ela itera sobre os três intervalos de movimento
+ * para calcular:
+ * - As equações de velocidade e posição para cada intervalo.
+ * - O deslocamento total da partícula.
+ * - O espaço total percorrido pela partícula, considerando possíveis inversões de sentido.
+ * - Os instantes exatos em que ocorrem inversões de sentido.
+ * - Os valores mínimos e máximos de posição e velocidade atingidos durante toda a simulação,
+ *   para escalar adequadamente os eixos dos gráficos.
+ * Os resultados calculados são então formatados e exibidos nos elementos DOM correspondentes.
+ */
 function calcularResultadosCompletos() {
     console.log("--- calcularResultadosCompletos() INICIADA ---");
     let s_atual_calc = s0; 
@@ -214,11 +330,13 @@ function calcularResultadosCompletos() {
         let v_inicio_intervalo_calc = v_atual_calc;
         let s_inicio_intervalo_calc = s_atual_calc;
         
-        equacoesV_html += `Intervalo ${i+1} (t' de 0 a ${dt[i]}s, t_global de ${t_acumulado_calc.toFixed(2)}s a ${(t_acumulado_calc + dt[i]).toFixed(2)}s):\n`;
-        equacoesV_html += `  v${i+1}(t') = ${v_inicio_intervalo_calc.toFixed(2)} + (${a[i].toFixed(2)}) * t'\n\n`;
+        // Modificação para equações de velocidade
+        equacoesV_html += `Intervalo ${i+1} (t' de 0 a ${dt[i]}s, t_global de ${t_acumulado_calc.toFixed(2)}s a ${(t_acumulado_calc + dt[i]).toFixed(2)}s):    `; // Removido \n, adicionado espaço
+        equacoesV_html += `v${i+1}(t') = ${v_inicio_intervalo_calc.toFixed(2)} + (${a[i].toFixed(2)}) * t'\n\n`; // Removidos espaços iniciais
 
-        equacoesS_html += `Intervalo ${i+1} (t' de 0 a ${dt[i]}s, t_global de ${t_acumulado_calc.toFixed(2)}s a ${(t_acumulado_calc + dt[i]).toFixed(2)}s):\n`;
-        equacoesS_html += `  s${i+1}(t') = ${s_inicio_intervalo_calc.toFixed(2)} + (${v_inicio_intervalo_calc.toFixed(2)}) * t' + 0.5 * (${a[i].toFixed(2)}) * t'^2\n\n`;
+        // Modificação para equações de posição
+        equacoesS_html += `Intervalo ${i+1} (t' de 0 a ${dt[i]}s, t_global de ${t_acumulado_calc.toFixed(2)}s a ${(t_acumulado_calc + dt[i]).toFixed(2)}s):    `; // Removido \n, adicionado espaço
+        equacoesS_html += `s${i+1}(t') = ${s_inicio_intervalo_calc.toFixed(2)} + (${v_inicio_intervalo_calc.toFixed(2)}) * t' + 0.5 * (${a[i].toFixed(2)}) * t'^2\n\n`; // Removidos espaços iniciais
 
         // Cálculo do espaço percorrido e instantes de inversão
         if (a[i] !== 0) {
@@ -337,7 +455,23 @@ function calcularResultadosCompletos() {
     console.log("--- calcularResultadosCompletos() FINALIZADA ---");
 }
 
-
+/*!
+ * \brief Função de desenho principal do p5.js, chamada repetidamente a cada frame.
+ *
+ * Se a simulação não estiver rodando (ou seja, `rodandoSimulacao` é `false`), a função retorna
+ * e desabilita os botões de pausa/continuar.
+ * Caso contrário, calcula o incremento de tempo (`deltaTAnim`) desde o último frame.
+ * Verifica se o tempo da animação (`tempoAnimacao`) atingiu o tempo total da simulação.
+ * Se sim, marca a simulação como não rodando, para o loop de desenho, ajusta `tempoAnimacao`
+ * para o valor exato de `tempoTotalSimulacao`, desabilita os botões de pausa/continuar,
+ * e redesenha a animação e os gráficos uma última vez para mostrar o estado final.
+ * Se a simulação ainda não terminou, determina a aceleração atual, o tempo relativo
+ * dentro do intervalo atual, e as condições iniciais (posição e velocidade) desse intervalo.
+ * Atualiza a posição (`particula.s`) e velocidade (`particula.v`) da partícula.
+ * Adiciona os novos pontos de posição e velocidade aos arrays `dadosGraficoPos` e `dadosGraficoVel`.
+ * Chama `desenharAnimacao()` e `desenharGrafico()` para atualizar as visualizações.
+ * Incrementa `tempoAnimacao`, garantindo que não ultrapasse `tempoTotalSimulacao`.
+ */
 function draw() {
     if (!rodandoSimulacao) { // Se a simulação não deve rodar (ex: terminou), não faz nada.
         // Garante que os botões de pausa/continuar estejam desabilitados se a simulação não estiver rodando
@@ -428,6 +562,17 @@ function draw() {
     }
 }
 
+/*!
+ * \brief Desenha a animação da partícula no canvas principal (`animCanvas`).
+ *
+ * Limpa o fundo do canvas. Se a partícula não existir, retorna.
+ * Mapeia a posição da partícula (`particula.s`) para coordenadas visuais no canvas,
+ * considerando os valores `minPos` e `maxPos` para a escala.
+ * Desenha uma linha representando o eixo de movimento.
+ * Desenha a partícula como uma elipse na sua posição visual.
+ * Se houver instantes de inversão, calcula suas posições e as marca com elipses menores.
+ * Exibe texto com os valores atuais de posição, velocidade e tempo da animação.
+ */
 function desenharAnimacao() {
     background(220); 
 
@@ -473,6 +618,15 @@ function desenharAnimacao() {
     text(`s = ${particula.s.toFixed(2)}m, v = ${particula.v.toFixed(2)}m/s, t = ${tempoAnimacao.toFixed(2)}s`, 5, height - 5);
 }
 
+/*!
+ * \brief Calcula a posição da partícula em um tempo global específico da simulação.
+ *
+ * Esta função é usada para determinar a posição exata em um dado `tGlobal`,
+ * considerando as diferentes acelerações e durações de cada intervalo.
+ * É útil para marcar pontos específicos na animação ou gráficos, como os de inversão.
+ * \param tGlobal O tempo global (desde t=0 da simulação) para o qual a posição será calculada.
+ * \return A posição calculada da partícula no tempo `tGlobal`. Retorna `s0` se `tGlobal` for negativo ou zero.
+ */
 function calcularPosicaoEmTempoGlobal(tGlobal) {
     if (tGlobal < 0) return s0; 
     if (abs(tGlobal) < 1e-9) return s0;
@@ -494,6 +648,27 @@ function calcularPosicaoEmTempoGlobal(tGlobal) {
     return s_calc;
 }
 
+/*!
+ * \brief Desenha um gráfico (posição vs. tempo ou velocidade vs. tempo) em um objeto p5.Graphics.
+ *
+ * A função realiza as seguintes etapas:
+ * 1. Verifica se o objeto gráfico (`pg`) é válido.
+ * 2. Limpa o fundo do gráfico.
+ * 3. Ajusta `yMin` e `yMax` se o intervalo entre eles for muito pequeno, para evitar divisões por zero.
+ * 4. Desenha linhas de grade horizontais e verticais.
+ * 5. Desenha os eixos X (tempo) e Y (posição ou velocidade).
+ * 6. Adiciona rótulos textuais para os eixos e marcas de valor ao longo dos eixos.
+ * 7. Se houver dados, desenha a linha principal do gráfico conectando os pontos de dados.
+ * 8. Se houver instantes de inversão, marca esses pontos no gráfico (posição 0 para velocidade, ou a posição correspondente para o gráfico de posição).
+ *
+ * \param pg O objeto p5.Graphics (canvas off-screen) onde o gráfico será desenhado.
+ * \param dados Um array de objetos, onde cada objeto tem propriedades `x` (tempo) e `y` (posição ou velocidade).
+ * \param yMin O valor mínimo para a escala do eixo Y.
+ * \param yMax O valor máximo para a escala do eixo Y.
+ * \param labelY Uma string para o rótulo do eixo Y (ex: "Posição (m)").
+ * \param corLinha Um array RGB definindo a cor da linha principal do gráfico.
+ * \param xMaxTotal O valor máximo para a escala do eixo X (geralmente o tempo total da simulação).
+ */
 function desenharGrafico(pg, dados, yMin, yMax, labelY, corLinha, xMaxTotal) {
     if (!pg || typeof pg.background !== 'function' || !pg.width || !pg.height) { // Adicionado !pg.width || !pg.height
         console.warn(`desenharGrafico: pg inválido, sem dimensões, ou sem background() para ${labelY}. pg:`, pg, `Saindo.`);
@@ -644,6 +819,15 @@ function desenharGrafico(pg, dados, yMin, yMax, labelY, corLinha, xMaxTotal) {
     console.log(`--- Fim desenharGrafico para "${labelY}" ---`);
 }
 
+/*!
+ * \brief Função de callback executada quando a janela do navegador é redimensionada.
+ *
+ * Redimensiona o canvas de animação (`animCanvas`) e os objetos gráficos
+ * (`posGraphCanvas`, `velGraphCanvas`) para se ajustarem à nova largura de seus
+ * respectivos contêineres HTML. Após o redimensionamento, redesenha a animação
+ * e os gráficos para refletir as novas dimensões e garantir que o conteúdo
+ * seja exibido corretamente.
+ */
 function windowResized() {
     console.log("windowResized() chamado.");
     let canvasContainer = select('#canvasContainer');
@@ -674,6 +858,14 @@ function windowResized() {
         }
 }
 
+/*!
+ * \brief Função auxiliar chamada após um atraso para garantir que o DOM esteja pronto.
+ *
+ * Esta função simplesmente chama `windowResized()` para realizar o ajuste inicial
+ * das dimensões dos canvases com base nos seus contêineres HTML. O atraso
+ * ajuda a garantir que os elementos HTML já tenham sido renderizados e suas dimensões
+ * calculadas pelo navegador.
+ */
 function drawDOM() { 
     console.log("drawDOM() chamado, que por sua vez chama windowResized().");
     windowResized();
